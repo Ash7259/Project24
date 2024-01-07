@@ -1,0 +1,68 @@
+﻿@page "/UserPurchaseHistory/"
+@inject HttpClient _client
+@inject IJSRuntime js
+@attribute [Authorize]
+
+<h3 class="card-title"> User Purchase History</h3>
+
+<br />
+<br />
+
+@if (UserPurchaseHistory == null)
+{
+    <div class="alert alert-info">Loading Purchase History...</div>
+}
+else
+{
+    <table class="table table-responsive">
+        <thead>
+            <tr>
+                <th>Purchase Id</th>
+                <th>Customer Id</th>
+                <th>Car</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var purchase in UserPurchaseHistory)
+            {
+                <tr>
+                    <td>@purchase.PurchaseId</td>
+                    <td>@purchase.CustomerId</td>
+                    <td>@purchase.Car</td>
+                    <td>
+                        <a href="/UserPurchaseHistory/view/@purchase.Id" class="btn btn-primary">
+                            <span class="oi oi-book"></span>
+                        </a>
+                        <a href="/UserPurchaseHistory/edit/@purchase.Id" class="btn btn-warning">
+                            <span class="oi oi-pencil"></span>
+                        </a>
+                        <button class="btn btn-danger" @onclick="@(()=>Delete(purchase.Id))">
+                            <span class="oi oi-delete"></span>
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<Project.Shared.Domain.UserPurchaseHistory> UserPurchaseHistory;
+
+    protected async override Task OnInitializedAsync()
+    {
+        UserPurchaseHistory = await _client.GetFromJsonAsync<List<Project.Shared.Domain.UserPurchaseHistory>>($"{Endpoints.UserPurchaseHistoryEndpoint}");
+    }
+
+    async Task Delete(int purchaseId)
+    {
+        var purchase = UserPurchaseHistory.First(q => q.Id == purchaseId);
+        var confirm = await js.InvokeAsync<bool>("confirm", $"Do you want to delete Purchase Id: {purchase.PurchaseId}?");
+        if (confirm)
+        {
+            await _client.DeleteAsync($"{Endpoints.UserPurchaseHistoryEndpoint}/{purchaseId}");
+            await OnInitializedAsync();
+        }
+    }
+}
