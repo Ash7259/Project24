@@ -8,8 +8,6 @@ namespace Project.Shared.Domain
 {
     public class UserPurchaseHistory : BaseDomainModel
     {
-        public int PurchaseId { get; set; }
-        public int CustomerId { get; set; }
-        public string Car { get; set; }
+        public int UserPurchaseHistoryId { get; set; }
     }
 }

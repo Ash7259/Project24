@@ -12,8 +12,8 @@ using Project.Server.Data;
 namespace Project.Server.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240107161004_AddedDefaultDataAndUser")]
-    partial class AddedDefaultDataAndUser
+    [Migration("20240130053404_AddApplicationTables")]
+    partial class AddApplicationTables
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -374,7 +374,7 @@ namespace Project.Server.Data.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("Project.Shared.Domain.UserPurchaseHistory", b =>
+            modelBuilder.Entity("Project.Shared.Domain.Cart", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -382,7 +382,7 @@ namespace Project.Server.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Car")
+                    b.Property<string>("CarName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -398,35 +398,52 @@ namespace Project.Server.Data.Migrations
                     b.Property<DateTime>("DateUpdated")
                         .HasColumnType("datetime2");
 
+                    b.Property<bool>("IsCompleted")
+                        .HasColumnType("bit");
+
                     b.Property<int>("PurchaseId")
                         .HasColumnType("int");
+
+                    b.Property<DateTime>("RentEnd")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("RentStart")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("UserPurchaseHistories");
+                    b.ToTable("Carts");
+                });
 
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Car = "Toyota",
-                            CustomerId = 1,
-                            DateCreated = new DateTime(2024, 1, 8, 0, 10, 4, 236, DateTimeKind.Local).AddTicks(7045),
-                            DateUpdated = new DateTime(2024, 1, 8, 0, 10, 4, 236, DateTimeKind.Local).AddTicks(7058),
-                            PurchaseId = 1
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Car = "Nissan",
-                            CustomerId = 1,
-                            DateCreated = new DateTime(2024, 1, 8, 0, 10, 4, 236, DateTimeKind.Local).AddTicks(7062),
-                            DateUpdated = new DateTime(2024, 1, 8, 0, 10, 4, 236, DateTimeKind.Local).AddTicks(7063),
-                            PurchaseId = 2
-                        });
+            modelBuilder.Entity("Project.Shared.Domain.UserPurchaseHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateUpdated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserPurchaseHistoryId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("UserPurchaseHistories");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

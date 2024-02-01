@@ -10,5 +10,6 @@ namespace Project.Client.Static
         private static readonly string Prefix = "api";
 
         public static readonly string UserPurchaseHistoryEndpoint = $"{Prefix}/userpurchasehistories";
+        public static readonly string CartEndpoint = $"{Prefix}/carts";
     }
 }

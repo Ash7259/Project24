@@ -16,13 +16,7 @@ namespace Project.Server.Data
         {
         }
 
+        public DbSet<Cart> Carts { get; set; }
         public DbSet<UserPurchaseHistory> UserPurchaseHistories { get; set; }
-
-        protected override void OnModelCreating(ModelBuilder builder)
-        {
-            base.OnModelCreating(builder);
-
-            builder.ApplyConfiguration(new UserPurchaseHistorySeedConfiguration());
-        }
     }
 }

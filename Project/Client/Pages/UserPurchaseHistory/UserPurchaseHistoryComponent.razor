@@ -1,0 +1,14 @@
+﻿@using Project.Shared.Domain
+
+@inject HttpClient _client
+
+@code {
+    [Parameter] public int customerId { get; set; }
+    private List<Cart> userPurchaseHistory;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Call API endpoint to fetch user purchase history for the given customer
+        userPurchaseHistory = await _client.GetFromJsonAsync<List<Cart>>($"/api/customers/{customerId}/purchase-history");
+    }
+}

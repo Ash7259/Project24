@@ -1,0 +1,22 @@
+﻿@page "/MainPage"
+@inject NavigationManager NavigationManager
+
+<h3>Main Page</h3>
+
+<div class="buttons-container">
+    <button class="btn btn-primary" @onclick="BookNow">Book Now</button>
+    <button class="btn btn-secondary" @onclick="ViewOrderHistory">View Order History</button>
+</div>
+
+@code {
+    private void BookNow()
+    {
+        NavigationManager.NavigateTo("/Cart");
+    }
+
+    private void ViewOrderHistory()
+    {
+        int customerId = 1;
+        NavigationManager.NavigateTo("/UserPurchaseHistory/{CustomerId}");
+    }
+}

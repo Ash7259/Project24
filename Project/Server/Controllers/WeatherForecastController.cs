@@ -4,7 +4,7 @@ using Project.Shared;
 
 namespace Project.Server.Controllers
 {
-    [Authorize]
+    //[Authorize]
     [ApiController]
     [Route("[controller]")]
     public class WeatherForecastController : ControllerBase

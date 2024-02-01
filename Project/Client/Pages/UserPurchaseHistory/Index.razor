@@ -1,12 +1,11 @@
-﻿@page "/UserPurchaseHistory/"
+﻿@using Project.Shared.Domain
+
+@page "/UserPurchaseHistory/{CustomerId}"
 @inject HttpClient _client
 @inject IJSRuntime js
 @attribute [Authorize]
 
 <h3 class="card-title"> User Purchase History</h3>
-
-<br />
-<br />
 
 @if (UserPurchaseHistory == null)
 {
@@ -17,48 +16,62 @@ else
     <table class="table table-responsive">
         <thead>
             <tr>
-                <th>Purchase Id</th>
-                <th>Customer Id</th>
-                <th>Car</th>
-                <th>Actions</th>
+                <th>UserPurchaseHistoryId</th>
             </tr>
         </thead>
         <tbody>
-            @foreach (var purchase in UserPurchaseHistory)
+            @if (UserPurchaseHistory.Count == 0)
             {
                 <tr>
-                    <td>@purchase.PurchaseId</td>
-                    <td>@purchase.CustomerId</td>
-                    <td>@purchase.Car</td>
-                    <td>
-                        <a href="/UserPurchaseHistory/view/@purchase.Id" class="btn btn-primary">
-                            <span class="oi oi-book"></span>
-                        </a>
-                        <a href="/UserPurchaseHistory/edit/@purchase.Id" class="btn btn-warning">
-                            <span class="oi oi-pencil"></span>
-                        </a>
-                        <button class="btn btn-danger" @onclick="@(()=>Delete(purchase.Id))">
-                            <span class="oi oi-delete"></span>
-                        </button>
-                    </td>
+                    <td colspan="4">No purchase history available.</td>
                 </tr>
+            }
+            else
+            {
+                @foreach (var purchase in UserPurchaseHistory)
+                {
+                    <tr>
+                        <td>@purchase.UserPurchaseHistoryId</td>
+                        <td>
+                            <a href="/UserPurchaseHistory/view/@purchase.Id" class="btn btn-primary">
+                                <span class="oi oi-book"></span>
+                            </a>
+                            <a href="/UserPurchaseHistory/edit/@purchase.Id" class="btn btn-warning">
+                                <span class="oi oi-pencil"></span>
+                            </a>
+                            <button class="btn btn-danger" @onclick="@(()=>Delete(purchase.Id))">
+                                <span class="oi oi-delete"></span>
+                            </button>
+                        </td>
+                    </tr>
+                }
             }
         </tbody>
     </table>
 }
 
 @code {
-    private List<Project.Shared.Domain.UserPurchaseHistory> UserPurchaseHistory;
+    private List<UserPurchaseHistory> UserPurchaseHistory;
+    [Parameter] public int CustomerId { get; set; }  <!-- Add the CustomerId parameter -->
 
-    protected async override Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
     {
-        UserPurchaseHistory = await _client.GetFromJsonAsync<List<Project.Shared.Domain.UserPurchaseHistory>>($"{Endpoints.UserPurchaseHistoryEndpoint}");
+        try
+        {
+            // Use CustomerId to fetch data from the server
+            UserPurchaseHistory = await _client.GetFromJsonAsync<List<UserPurchaseHistory>>($"/api/customers/{CustomerId}/purchase-history");
+            Console.WriteLine($"Received {UserPurchaseHistory.Count} records");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching data: {ex.Message}");
+        }
     }
 
     async Task Delete(int purchaseId)
     {
-        var purchase = UserPurchaseHistory.First(q => q.Id == purchaseId);
-        var confirm = await js.InvokeAsync<bool>("confirm", $"Do you want to delete Purchase Id: {purchase.PurchaseId}?");
+        var userpurchasehistory = UserPurchaseHistory.First(q => q.Id == purchaseId);
+        var confirm = await js.InvokeAsync<bool>("confirm", $"Do you want to delete {userpurchasehistory.UserPurchaseHistoryId}?");
         if (confirm)
         {
             await _client.DeleteAsync($"{Endpoints.UserPurchaseHistoryEndpoint}/{purchaseId}");

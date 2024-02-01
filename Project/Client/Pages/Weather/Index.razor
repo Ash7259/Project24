@@ -1,0 +1,73 @@
+﻿@page "/weatherforecast"
+@inject HttpClient HttpClient
+
+<h3>Weather Forecast</h3>
+
+@if (forecasts == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Temperature (C)</th>
+                <th>Summary</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var forecast in forecasts)
+            {
+                <tr>
+                    <td>@forecast.Date</td>
+                    <td>@forecast.TemperatureC</td>
+                    <td>@forecast.Summary</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private WeatherForecast[] forecasts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            // Initialize with some default values while fetching data
+            forecasts = GetDefaultForecasts();
+
+            // Fetch actual data asynchronously
+            var fetchedForecasts = await HttpClient.GetFromJsonAsync<WeatherForecast[]>("WeatherForecast");
+
+            // Update the forecasts array with the fetched data
+            forecasts = fetchedForecasts;
+        }
+        catch (Exception ex)
+        {
+            // Handle the exception (e.g., log, display an error message)
+            Console.WriteLine($"Error fetching weather forecast: {ex.Message}");
+        }
+    }
+
+    private WeatherForecast[] GetDefaultForecasts()
+    {
+        // Return some default forecasts as a placeholder
+        return new WeatherForecast[]
+        {
+            new WeatherForecast { Date = DateTime.Now.Date, TemperatureC = 20, Summary = "Partly Cloudy" },
+            new WeatherForecast { Date = DateTime.Now.Date.AddDays(1), TemperatureC = 22, Summary = "Sunny" },
+            // Add more default forecasts as needed
+        };
+    }
+
+    private class WeatherForecast
+    {
+        public DateTime Date { get; set; }
+        public int TemperatureC { get; set; }
+        public string Summary { get; set; }
+    }
+}

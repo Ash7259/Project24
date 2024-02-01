@@ -56,3 +56,9 @@ app.MapControllers();
 app.MapFallbackToFile("index.html");
 
 app.Run();
+
+app.MapRazorPages();
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+app.MapFallbackToFile("index.html");
